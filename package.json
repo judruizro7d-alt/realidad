@@ -1,0 +1,14 @@
+{
+  "name": "picafuego-webar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "PICAFUEGO · Experiencia WebAR: reconocimiento de imagen con chile bailarín + filtro facial",
+  "scripts": {
+    "dev": "serve . -l 3000",
+    "start": "serve . -l 3000",
+    "build": "echo \"Sitio estático: no requiere compilación\""
+  },
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es" data-device="desktop">
+
+<head>
+	<meta charset="utf-8">
+	<title>PICAFUEGO · Sabor que se atreve — Experiencia AR</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+	<meta name="description" content="Escanea la imagen de PICAFUEGO y mira bailar al chile entre las llamas, o activa tu modo PICAFUEGO con un filtro facial de fuego y bigote.">
+	<meta name="theme-color" content="#0b0f19">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta property="og:title" content="PICAFUEGO · Sabor que se atreve">
+	<meta property="og:description" content="Realidad aumentada: chile bailarín y filtro facial PICAFUEGO.">
+	<meta property="og:image" content="assets/marker/imagenescaneable.png">
+	<link rel="icon" type="image/png" href="assets/img/chile.png">
+	<link rel="apple-touch-icon" href="assets/img/chile.png">
+
+	<link rel="preload" href="assets/fonts/anton-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+	<link rel="preload" href="assets/img/logo.png" as="image">
+	<link rel="stylesheet" href="css/app.css">
+
+	<script type="importmap">
+	{
+		"imports": {
+			"three": "./js/three.compat.js",
+			"three/addons/": "./js/addons/"
+		}
+	}
+	</script>
+</head>
+
+<body>
+
+	<!-- ═════════ INICIO ═════════ -->
+	<main id="home" class="screen active" aria-label="Inicio">
+		<div class="home-bg" aria-hidden="true">
+			<i class="stripe s1"></i><i class="stripe s2"></i><i class="stripe s3"></i>
+			<div class="glow"></div>
+		</div>
+
+		<div class="home-inner">
+			<section class="home-copy">
+				<img class="logo" src="assets/img/logo.png" alt="PICAFUEGO" width="686" height="345">
+				<h1 class="headline">
+					<span>Sabor</span> <span>que se</span> <span class="amber">atreve</span>
+				</h1>
+				<p class="lead">Dos experiencias de realidad aumentada, directo desde tu navegador. Sin instalar nada.</p>
+
+				<div class="cta">
+					<button id="btn-scan" class="btn btn-primary" type="button">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8V5a1 1 0 0 1 1-1h3M16 4h3a1 1 0 0 1 1 1v3M20 16v3a1 1 0 0 1-1 1h-3M8 20H5a1 1 0 0 1-1-1v-3M4 12h16" /></svg>
+						<span><b>Escanear imagen</b><small>Activa el chile bailarín</small></span>
+					</button>
+					<button id="btn-face" class="btn btn-fire" type="button">
+						<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .2 1.5 1 2 2 2 0-3-1-5 1-8z" /></svg>
+						<span><b>Activa tu modo PICAFUEGO</b><small>Filtro facial con fuego y bigote</small></span>
+					</button>
+				</div>
+
+				<ol class="steps">
+					<li><b>1</b><span>Pulsa <em>Escanear imagen</em> y permite la cámara.</span></li>
+					<li><b>2</b><span><span data-only="mobile">Apunta la cámara trasera hacia</span><span data-only="desktop">Muestra frente a tu webcam</span> la imagen de PICAFUEGO.</span></li>
+					<li><b>3</b><span>Toca los 3 iconos para ver la información.</span></li>
+				</ol>
+
+				<p class="target-link">
+					<a id="open-target" href="assets/marker/imagenescaneable.png" target="_blank" rel="noopener">¿No tienes la imagen a la mano? Ábrela aquí y escanéala desde otra pantalla</a>
+				</p>
+				<p id="support-note" class="support-note" hidden></p>
+			</section>
+
+			<section class="home-hero" aria-hidden="true">
+				<canvas id="home-fire" width="640" height="640"></canvas>
+				<img class="hero-chile" src="assets/img/chile.png" alt="">
+			</section>
+		</div>
+	</main>
+
+	<!-- ═════════ EXPERIENCIA 1 · ESCANEO ═════════ -->
+	<section id="ar-screen" class="screen" aria-label="Escaneo de imagen">
+		<div id="ar-container"></div>
+
+		<header class="topbar">
+			<button class="icon-btn" data-action="back" type="button" aria-label="Volver al inicio">
+				<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" /></svg>
+			</button>
+			<img class="top-logo" src="assets/img/logo.png" alt="PICAFUEGO">
+			<div class="top-actions">
+				<button class="icon-btn" id="ar-switch-cam" type="button" aria-label="Cambiar de cámara" hidden>
+					<svg viewBox="0 0 24 24"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" /><path d="M9.5 13a2.7 2.7 0 0 1 4.7-1.8M14.5 13a2.7 2.7 0 0 1-4.7 1.8" /></svg>
+				</button>
+				<button class="icon-btn sound-btn" type="button" aria-label="Activar o silenciar el sonido" data-action="sound"></button>
+			</div>
+		</header>
+
+		<div id="scan-hint" class="scan-hint">
+			<div class="frame"><i></i><i></i><i></i><i></i><span class="line"></span></div>
+			<p>
+				<span data-only="mobile">Apunta la cámara trasera hacia la imagen de PICAFUEGO</span>
+				<span data-only="desktop">Muestra la imagen de PICAFUEGO frente a tu cámara (impresa o en otra pantalla)</span>
+			</p>
+			<small>Buena luz · imagen completa y a unos 20–40 cm</small>
+		</div>
+
+		<div id="lost-hint" class="lost-hint" hidden>Se perdió la imagen — vuelve a apuntar hacia ella</div>
+
+		<nav id="dock" class="dock" aria-label="Información del producto" hidden></nav>
+
+		<div id="panel" class="panel" hidden>
+			<div class="panel-card" id="panel-card">
+				<img id="panel-img" alt="">
+				<button id="panel-close" class="panel-close" type="button" aria-label="Cerrar"></button>
+			</div>
+		</div>
+	</section>
+
+	<!-- ═════════ EXPERIENCIA 2 · FILTRO FACIAL ═════════ -->
+	<section id="face-screen" class="screen" aria-label="Filtro facial">
+		<canvas id="face-canvas"></canvas>
+
+		<header class="topbar">
+			<button class="icon-btn" data-action="back" type="button" aria-label="Volver al inicio">
+				<svg viewBox="0 0 24 24"><path d="M15 5l-7 7 7 7" /></svg>
+			</button>
+			<img class="top-logo" src="assets/img/logo.png" alt="PICAFUEGO">
+			<div class="top-actions">
+				<button class="icon-btn" id="face-switch-cam" type="button" aria-label="Cambiar de cámara" hidden>
+					<svg viewBox="0 0 24 24"><path d="M4 7h3l1.5-2h7L17 7h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z" /><path d="M9.5 13a2.7 2.7 0 0 1 4.7-1.8M14.5 13a2.7 2.7 0 0 1-4.7 1.8" /></svg>
+				</button>
+				<button class="icon-btn sound-btn" type="button" aria-label="Activar o silenciar el sonido" data-action="sound"></button>
+			</div>
+		</header>
+
+		<div id="face-hint" class="scan-hint face-hint" hidden>
+			<p>Coloca tu rostro frente a la cámara</p>
+			<small>Con buena luz y de frente se ve mejor</small>
+		</div>
+
+		<div id="face-controls" class="face-controls" hidden>
+			<div class="chips" role="group" aria-label="Efectos">
+				<button class="chip on" data-fx="fire" type="button" aria-pressed="true">🔥 Fuego</button>
+				<button class="chip on" data-fx="mustache" type="button" aria-pressed="true">Bigote</button>
+				<button class="chip on" data-fx="chile" type="button" aria-pressed="true">🌶️ Chile</button>
+			</div>
+			<div class="face-actions">
+				<button class="round-btn" id="fx-master" type="button" aria-pressed="true">
+					<svg viewBox="0 0 24 24"><path d="M12 2c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2 1-3 2-4 .2 1.5 1 2 2 2 0-3-1-5 1-8z" /></svg>
+					<span>Filtro</span>
+				</button>
+				<button class="round-btn shutter" id="fx-photo" type="button" aria-label="Tomar foto"><i></i></button>
+				<button class="round-btn" id="fx-close" type="button">
+					<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" /></svg>
+					<span>Cerrar cámara</span>
+				</button>
+			</div>
+		</div>
+	</section>
+
+	<!-- Carga / errores (compartido) -->
+	<div id="loading" class="sheet-wrap" hidden>
+		<div class="sheet">
+			<div class="spinner" aria-hidden="true"></div>
+			<p id="loading-text">Iniciando cámara…</p>
+		</div>
+	</div>
+
+	<div id="error" class="sheet-wrap" hidden role="alertdialog" aria-labelledby="error-title">
+		<div class="sheet">
+			<h2 id="error-title">Ups</h2>
+			<p id="error-text"></p>
+			<div class="sheet-actions">
+				<button id="error-retry" class="btn btn-primary small" type="button">Reintentar</button>
+				<button id="error-back" class="btn btn-ghost small" type="button">Volver al inicio</button>
+			</div>
+		</div>
+	</div>
+
+	<div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+	<button id="home-sound" class="icon-btn sound-btn floating-sound" type="button" aria-label="Activar o silenciar el sonido" data-action="sound"></button>
+
+	<script type="module" src="js/main.js"></script>
+	<noscript><p style="position:fixed;inset:0;display:grid;place-items:center;background:#0b0f19;color:#fff;font-family:sans-serif;padding:24px;text-align:center">PICAFUEGO necesita JavaScript activado para funcionar.</p></noscript>
+</body>
+
+</html>
